@@ -1,0 +1,230 @@
+openapi: 3.0.3
+info:
+  title: Subscriptions Service API
+  version: 1.0.0
+  description: REST API для управления онлайн-подписками пользователей
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /ping:
+    get:
+      summary: Проверка работы сервиса
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: pong
+
+  /subscriptions:
+    get:
+      summary: Получить все подписки
+      parameters:
+        - name: user_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: service_name
+          in: query
+          schema:
+            type: string
+        - name: min_price
+          in: query
+          schema:
+            type: integer
+        - name: max_price
+          in: query
+          schema:
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [price_asc, price_desc, start_date_asc, start_date_desc]
+      responses:
+        "200":
+          description: Список всех подписок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscription"
+
+    post:
+      summary: Создать новую подписку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCreate"
+      responses:
+        "200":
+          description: Подписка создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/{id}:
+    get:
+      summary: Получить подписку по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Подписка найдена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          description: Подписка не найдена
+
+    put:
+      summary: Обновить подписку
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCreate"
+      responses:
+        "200":
+          description: Подписка обновлена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+    delete:
+      summary: Удалить подписку
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Подписка удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: deleted
+
+  /subscriptions/total:
+    get:
+      summary: Получить суммарную стоимость подписок
+      parameters:
+        - name: user_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+            example: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+        - name: service_name
+          in: query
+          schema:
+            type: string
+            example: "Yandex Plus"
+        - name: start
+          in: query
+          schema:
+            type: string
+            example: "07-2025"
+        - name: end
+          in: query
+          schema:
+            type: string
+            example: "12-2025"
+      responses:
+        "200":
+          description: Суммарная стоимость подписок
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 500
+
+components:
+  schemas:
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "88a756f8-f4ba-46d0-b65c-70a179ee34d0"
+        service_name:
+          type: string
+          example: "Yandex Plus"
+        price:
+          type: integer
+          example: 400
+        user_id:
+          type: string
+          format: uuid
+          example: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+        start_date:
+          type: string
+          example: "07-2025"
+        end_date:
+          type: string
+          nullable: true
+          example: null
+
+    SubscriptionCreate:
+      type: object
+      properties:
+        service_name:
+          type: string
+          example: "Netflix"
+        price:
+          type: integer
+          example: 500
+        user_id:
+          type: string
+          format: uuid
+          example: "60601fee-2bf1-4721-ae6f-7636e79a0cba"
+        start_date:
+          type: string
+          example: "07-2025"
+        end_date:
+          type: string
+          nullable: true
+          example: null
+      required:
+        - service_name
+        - price
+        - user_id
+        - start_date
