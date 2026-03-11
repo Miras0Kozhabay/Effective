@@ -20,8 +20,8 @@ REST API для управления онлайн-подписками поль�
 
 1. Клонируй репозиторий:
 ```bash
-git clone <repo_url>
-cd <project_folder>
+git clone https://github.com/Miras0Kozhabay/Effective.git
+cd Effective
 ````
 
 2. Создай `.env` с настройками БД (пример):
@@ -104,7 +104,7 @@ internal/
   config/        # загрузка .env
   handler/       # обработчики запросов
   repository/    # работа с БД
-  service/       # бизнес-логика (если нужна)
+  service/       # бизнес-логика (пока что пустая для данного проекта)
   model/         # структуры данных
 migrations/      # SQL миграции
 swagger.yaml     # OpenAPI спецификация
